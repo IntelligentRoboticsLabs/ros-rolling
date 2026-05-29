@@ -115,7 +115,8 @@ packages_select_by_deps:
   - can_msgs
   - ros2_socketcan_msgs
 
-  - nav2_bringup
+  - bond_core
+  - bondcpp
 
   - autoware_internal_msgs
   - autoware_common_msgs
