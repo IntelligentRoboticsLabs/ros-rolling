@@ -264,6 +264,7 @@ packages_select_by_deps:
       - mocap4r2_marker_viz_srvs
       - mocap4r2_robot_gt
       - mocap4r2_robot_gt_msgs
+      - libg2o
 
 patch_dir: patch
 rosdistro_snapshot: rosdistro_snapshot.yaml
