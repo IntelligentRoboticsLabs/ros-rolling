@@ -471,3 +471,14 @@ index 929e8c88f..0d2f81c0c 100644
  
  install(DIRECTORY include/ DESTINATION include/moveit_ros_planning)
  install(
+diff --git a/ConfigExtras.cmake b/ConfigExtras.cmake
+--- a/ConfigExtras.cmake
++++ b/ConfigExtras.cmake
+@@ -3,7 +3,6 @@ find_package(
+ find_package(
+   Boost
+   REQUIRED
+-  system
+   filesystem
+   date_time
+   program_options
