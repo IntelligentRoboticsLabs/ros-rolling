@@ -1,0 +1,13 @@
+diff --git a/zstd_point_cloud_transport/include/zstd_point_cloud_transport/zstd_subscriber.hpp b/zstd_point_cloud_transport/include/zstd_point_cloud_transport/zstd_subscriber.hpp
+index b5828d3..cfea8f0 100644
+--- a/zstd_point_cloud_transport/include/zstd_point_cloud_transport/zstd_subscriber.hpp
++++ b/zstd_point_cloud_transport/include/zstd_point_cloud_transport/zstd_subscriber.hpp
+@@ -51,8 +51,6 @@ class ZstdSubscriber
+ public:
+   ZstdSubscriber();
+ 
+-  std::string getTransportName() const override;
+-
+   void declareParameters() override;
+ 
+   std::string getDataType() const override;
