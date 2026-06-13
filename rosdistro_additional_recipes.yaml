@@ -418,3 +418,8 @@ cm_executors:
   tag: 0.9.1
   url: https://github.com/cellumation/cm_executors.git
   version: 0.9.1
+# temp addition
+rviz_visual_tools:
+  tag: release/rolling/rviz_visual_tools/4.1.4-4
+  url: https://github.com/ros2-gbp/rviz_visual_tools-release
+  version: 4.1.4
