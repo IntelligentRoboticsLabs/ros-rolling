@@ -1,8 +1,8 @@
 diff --git a/zstd_point_cloud_transport/CMakeLists.txt b/zstd_point_cloud_transport/CMakeLists.txt
-index 51e2d6c..278c591 100644
+index 51e2d6c..332290e 100644
 --- a/zstd_point_cloud_transport/CMakeLists.txt
 +++ b/zstd_point_cloud_transport/CMakeLists.txt
-@@ -9,6 +9,8 @@ find_package(pluginlib REQUIRED)
+@@ -9,12 +9,16 @@ find_package(pluginlib REQUIRED)
  find_package(point_cloud_interfaces REQUIRED)
  find_package(point_cloud_transport REQUIRED)
  find_package(rclcpp REQUIRED)
@@ -11,7 +11,15 @@ index 51e2d6c..278c591 100644
  
  set(dependencies
    pluginlib
-@@ -29,7 +31,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
+   point_cloud_interfaces
+   point_cloud_transport
+   rclcpp
++  zstd_cmake_module
++  zstd
+ )
+ 
+ add_library(${PROJECT_NAME}
+@@ -29,7 +33,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
    ${point_cloud_interfaces_TARGETS}
    point_cloud_transport::point_cloud_transport
    rclcpp::rclcpp
@@ -33,3 +41,16 @@ index b5828d3..cfea8f0 100644
    void declareParameters() override;
  
    std::string getDataType() const override;
+diff --git a/zstd_point_cloud_transport/package.xml b/zstd_point_cloud_transport/package.xml
+index 17fc04a..fa0e39b 100644
+--- a/zstd_point_cloud_transport/package.xml
++++ b/zstd_point_cloud_transport/package.xml
+@@ -22,7 +22,7 @@
+   <depend>point_cloud_interfaces</depend>
+   <depend>point_cloud_transport</depend>
+   <depend>rclcpp</depend>
+-  <depend>libzstd-dev</depend>
++  <depend>zstd_cmake_module</depend>
+ 
+   <test_depend>ament_lint_auto</test_depend>
+   <test_depend>ament_lint_common</test_depend>
