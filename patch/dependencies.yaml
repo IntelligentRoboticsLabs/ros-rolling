@@ -301,3 +301,5 @@ depth_image_proc:
 rqt_mocap4r2_control:
   remove_host: ["qt-main"]
   remove_run: ["qt-main"]
+zstd_point_cloud_transport:
+  add_host: ["ros-rolling-zstd-cmake-module", "zstd"]

@@ -119,6 +119,7 @@ packages_select_by_deps:
   - bondcpp
   - nav2_minimal_tb3_sim
   - nav2_minimal_tb4_sim
+  - point_cloud_transport_plugins
 
   - autoware_internal_msgs
   - autoware_common_msgs
