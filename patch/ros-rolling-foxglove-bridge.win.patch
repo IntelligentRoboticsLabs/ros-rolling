@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 71deedd3..04e1ecc0 100644
+index 7426013..72e281d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -23,7 +23,7 @@ option(FOXGLOVE_BRIDGE_REMOTE_ACCESS "Build with remote access gateway support"
+@@ -61,7 +61,7 @@ endif()
  
  macro(enable_strict_compiler_warnings target)
    if (MSVC)
@@ -11,7 +11,7 @@ index 71deedd3..04e1ecc0 100644
    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
      target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror -Wold-style-cast -Wfloat-equal -Wmost -Wunused-exception-parameter)
    else()
-@@ -75,6 +75,75 @@ FetchContent_Declare(
+@@ -122,6 +122,75 @@ FetchContent_Declare(
    URL_HASH SHA256=${FOXGLOVE_SDK_SHA}
  )
  FetchContent_MakeAvailable(foxglove_sdk)
@@ -84,27 +84,13 @@ index 71deedd3..04e1ecc0 100644
 +    "${_foxglove_parameter_hpp}"
 +  )
 +endif()
- file(GLOB_RECURSE FOXGLOVE_SDK_SOURCES CONFIGURE_DEPENDS "${foxglove_sdk_SOURCE_DIR}/src/*.cpp")
  
- add_library(foxglove_cpp_shared SHARED)
-@@ -86,10 +155,27 @@ target_include_directories(foxglove_cpp_shared SYSTEM
- target_sources(foxglove_cpp_shared PRIVATE ${FOXGLOVE_SDK_SOURCES})
- # Import the prebuilt C shared library from the fetched SDK
- add_library(foxglove-shared SHARED IMPORTED)
--set_target_properties(foxglove-shared PROPERTIES
--  IMPORTED_LOCATION ${foxglove_sdk_SOURCE_DIR}/lib/libfoxglove.so
--)
-+if(WIN32)
-+  set_target_properties(foxglove-shared PROPERTIES
-+    IMPORTED_IMPLIB ${foxglove_sdk_SOURCE_DIR}/lib/foxglove.dll.lib
-+    IMPORTED_LOCATION ${foxglove_sdk_SOURCE_DIR}/lib/foxglove.dll
-+  )
-+else()
-+  set_target_properties(foxglove-shared PROPERTIES
-+    IMPORTED_LOCATION ${foxglove_sdk_SOURCE_DIR}/lib/libfoxglove.so
-+  )
-+endif()
- target_link_libraries(foxglove_cpp_shared PRIVATE foxglove-shared)
+ # The dist's CMake package config defines IMPORTED targets for the prebuilt C libraries
+ # (foxglove-static, foxglove-shared) and the foxglove_sdk_add_cpp_library() helper, which
+@@ -136,6 +205,16 @@ if (FOXGLOVE_BRIDGE_REMOTE_ACCESS)
+ else()
+   foxglove_sdk_add_cpp_library(foxglove_cpp_shared TYPE SHARED REMOTE_ACCESS OFF)
+ endif()
 +if(WIN32)
 +  target_link_libraries(foxglove_cpp_shared PRIVATE
 +    Ws2_32.lib
@@ -116,14 +102,14 @@ index 71deedd3..04e1ecc0 100644
 +  )
 +endif()
  set_target_properties(foxglove_cpp_shared PROPERTIES
-   INSTALL_RPATH "$ORIGIN"
    BUILD_WITH_INSTALL_RPATH TRUE
+ )
 diff --git a/src/ros2_foxglove_bridge.cpp b/src/ros2_foxglove_bridge.cpp
-index 2229aadc..f79a93ce 100644
+index 601db6c..cc4e4f5 100644
 --- a/src/ros2_foxglove_bridge.cpp
 +++ b/src/ros2_foxglove_bridge.cpp
 @@ -1,3 +1,4 @@
 +#define _CRT_SECURE_NO_WARNINGS
  #include <filesystem>
  #include <fstream>
- #include <unordered_set>
+ #include <type_traits>

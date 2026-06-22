@@ -150,7 +150,7 @@ moveit_setup_assistant:
 moveit:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 moveit_visual_tools:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "libboost-devel"]
 force_torque_sensor_broadcaster:
   add_host: ["typeguard", "jinja2"]
 ros_gz_sim:
