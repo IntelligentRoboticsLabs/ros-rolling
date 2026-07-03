@@ -177,6 +177,8 @@ packages_select_by_deps:
   # Requested in https://github.com/RoboStack/ros-rolling/issues/12
   - twist_stamper
 
+  - urdf_tutorial
+
   # These packages are only built on Linux as they depend on Linux-specific API
   - if: linux
     then:
