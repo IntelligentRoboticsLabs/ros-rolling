@@ -1,0 +1,60 @@
+[workspace]
+name = "plansys2_ws"
+channels = [
+  "file:///home/user/pixi/ros-rolling/output",
+  "https://prefix.dev/irl-rolling",
+  "https://prefix.dev/robostack-rolling",
+  "https://prefix.dev/conda-forge",
+]
+platforms = ["linux-64"]
+
+
+[dependencies]
+ros-rolling-ros-base = "*"
+ros-rolling-ros2cli = "*"
+
+# Prefer Zenoh middleware
+ros-rolling-rmw-zenoh-cpp = "*"
+
+# CLI autocompletion for `ros2` (argcomplete)
+argcomplete = "*"
+
+# Build tools
+colcon-common-extensions = "*"
+cmake = "<4"
+pkg-config = "*"
+compilers = "*"
+make = "*"
+ninja = "*"
+
+# PCL (and several ROS packages) still expect Eigen3 (3.x) config semantics.
+# Pin to Eigen < 5 to avoid CMake falling back to system Eigen (/usr/include/eigen3).
+eigen = "<5"
+
+# PlanSys2 runtime (from local output first, then remote channels)
+ros-rolling-plansys2-bringup = "*"
+ros-rolling-plansys2-bt-actions = "*"
+ros-rolling-plansys2-core = "*"
+ros-rolling-plansys2-domain-expert = "*"
+ros-rolling-plansys2-executor = "*"
+ros-rolling-plansys2-lifecycle-manager = "*"
+ros-rolling-plansys2-msgs = "*"
+ros-rolling-plansys2-pddl-parser = "*"
+ros-rolling-plansys2-planner = "*"
+ros-rolling-plansys2-popf-plan-solver = "*"
+ros-rolling-plansys2-problem-expert = "*"
+ros-rolling-plansys2-support-py = "*"
+ros-rolling-plansys2-terminal = "*"
+ros-rolling-plansys2-tools = "*"
+
+# POPF itself (needed by ros-rolling-plansys2-popf-plan-solver)
+ros-rolling-popf = "*"
+
+# rclcpp_cascade_lifecycle (dependency of several plansys2 packages)
+ros-rolling-rclcpp-cascade-lifecycle = "*"
+
+
+[tasks]
+build = { cmd = "bash -lc 'colcon build --cmake-args -DEigen3_DIR=\"$CONDA_PREFIX/share/eigen3/cmake\"'", description = "Build the ROS workspace" }
+test = { cmd = "bash -lc 'colcon test && colcon test-result --verbose'", description = "Run tests for the workspace" }
+clean = { cmd = "rm -rf build install log", description = "Clean build artifacts (build, install, log directories)" }

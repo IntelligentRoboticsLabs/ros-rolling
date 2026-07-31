@@ -1,0 +1,93 @@
+[workspace]
+name = "easynav_plugins_ws"
+channels = [
+  "file:///home/user/pixi/ros-rolling/output",
+  "https://prefix.dev/irl-rolling",
+  "https://prefix.dev/robostack-rolling",
+  "https://prefix.dev/conda-forge",
+]
+platforms = ["linux-64"]
+
+
+[dependencies]
+# Base ROS dependencies
+ros-rolling-ros-base = "*"
+pkg-config = "*"
+compilers = "*"
+make = "*"
+ninja = "*"
+ros-rolling-ros2cli = "*"
+
+# CLI autocompletion for `ros2` (argcomplete)
+argcomplete = "*"
+
+# Runtime deps for easynav_tools TUI
+rich = "*"
+platformdirs = "*"
+typing_extensions = "*"
+pydantic = "*"
+
+# PCL (and several ROS packages) still expect Eigen3 (3.x) config semantics.
+# Pin to Eigen < 5 to avoid CMake falling back to system Eigen (/usr/include/eigen3).
+eigen = "<5"
+
+# Prefer Zenoh middleware
+ros-rolling-rmw-zenoh-cpp = "*"
+
+# Build tools
+colcon-common-extensions = "*"
+cmake = "<4"
+
+# Workspace dependencies
+ros-rolling-ament-cmake = "*"
+ros-rolling-ament-lint-auto = "*"
+ros-rolling-ament-lint-common = "*"
+ros-rolling-rclcpp = "*"
+ros-rolling-rviz2 = "*"
+ros-rolling-teleop-twist-keyboard = "*"
+ros-rolling-twist-stamper = "*"
+ros-rolling-twist-mux = "*"
+ros-rolling-urdf = "*"
+ros-rolling-xacro = "*"
+
+# Locally-built EasyNav + NavMap artifacts (from file:///.../ros-rolling/output)
+ros-rolling-easynav = "*"
+ros-rolling-easynav-common = "*"
+ros-rolling-easynav-controller = "*"
+ros-rolling-easynav-core = "*"
+ros-rolling-easynav-costmap-localizer = "*"
+ros-rolling-easynav-costmap-maps-manager = "*"
+ros-rolling-easynav-costmap-planner = "*"
+ros-rolling-easynav-fusion-localizer = "*"
+ros-rolling-easynav-gps-localizer = "*"
+ros-rolling-easynav-interfaces = "*"
+ros-rolling-easynav-localizer = "*"
+ros-rolling-easynav-maps-manager = "*"
+ros-rolling-easynav-mpc-controller = "*"
+ros-rolling-easynav-mppi-controller = "*"
+ros-rolling-easynav-navmap-localizer = "*"
+ros-rolling-easynav-navmap-maps-manager = "*"
+ros-rolling-easynav-navmap-planner = "*"
+ros-rolling-easynav-octomap-maps-manager = "*"
+ros-rolling-easynav-planner = "*"
+ros-rolling-easynav-routes-maps-manager = "*"
+ros-rolling-easynav-sensors = "*"
+ros-rolling-easynav-serest-controller = "*"
+ros-rolling-easynav-simple-common = "*"
+ros-rolling-easynav-simple-controller = "*"
+ros-rolling-easynav-simple-localizer = "*"
+ros-rolling-easynav-simple-maps-manager = "*"
+ros-rolling-easynav-simple-planner = "*"
+ros-rolling-easynav-support-py = "*"
+ros-rolling-easynav-system = "*"
+ros-rolling-easynav-tools = "*"
+ros-rolling-easynav-vff-controller = "*"
+ros-rolling-navmap-core = "*"
+ros-rolling-navmap-ros = "*"
+ros-rolling-navmap-ros-interfaces = "*"
+
+
+[tasks]
+build = { cmd = "bash -lc 'colcon build --cmake-args -DEigen3_DIR=\"$CONDA_PREFIX/share/eigen3/cmake\"'", description = "Build the ROS workspace" }
+test = { cmd = "bash -lc 'colcon test && colcon test-result --verbose'", description = "Run tests for the workspace" }
+clean = { cmd = "rm -rf build install log", description = "Clean build artifacts (build, install, log directories)" }
