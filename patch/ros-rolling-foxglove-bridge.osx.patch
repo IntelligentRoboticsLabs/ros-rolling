@@ -1,31 +1,8 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 71deedd3..15821a4e 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -86,9 +86,15 @@ target_include_directories(foxglove_cpp_shared SYSTEM
- target_sources(foxglove_cpp_shared PRIVATE ${FOXGLOVE_SDK_SOURCES})
- # Import the prebuilt C shared library from the fetched SDK
- add_library(foxglove-shared SHARED IMPORTED)
--set_target_properties(foxglove-shared PROPERTIES
--  IMPORTED_LOCATION ${foxglove_sdk_SOURCE_DIR}/lib/libfoxglove.so
--)
-+if(APPLE)
-+  set_target_properties(foxglove-shared PROPERTIES
-+    IMPORTED_LOCATION ${foxglove_sdk_SOURCE_DIR}/lib/libfoxglove.dylib
-+  )
-+else()
-+  set_target_properties(foxglove-shared PROPERTIES
-+    IMPORTED_LOCATION ${foxglove_sdk_SOURCE_DIR}/lib/libfoxglove.so
-+  )
-+endif()
- target_link_libraries(foxglove_cpp_shared PRIVATE foxglove-shared)
- set_target_properties(foxglove_cpp_shared PROPERTIES
-   INSTALL_RPATH "$ORIGIN"
 diff --git a/src/ros2_foxglove_bridge.cpp b/src/ros2_foxglove_bridge.cpp
-index 2229aadc..9431dbdd 100644
+index 601db6c..fc18e1c 100644
 --- a/src/ros2_foxglove_bridge.cpp
 +++ b/src/ros2_foxglove_bridge.cpp
-@@ -479,7 +479,7 @@ void FoxgloveBridge::updateAdvertisedTopics(
+@@ -492,7 +492,7 @@ void FoxgloveBridge::updateAdvertisedTopics(
        const TopicAndDatatype topicAndSchemaName = {topic, schemaName};
        if (latestTopics.find(topicAndSchemaName) == latestTopics.end()) {
          const auto channelId = channel.id();
@@ -34,7 +11,7 @@ index 2229aadc..9431dbdd 100644
                      topic.c_str(), schemaName.c_str());
          // Remove any active subscriptions for this channel
          _subscriptions.erase(channelId);
-@@ -549,7 +549,7 @@ void FoxgloveBridge::updateAdvertisedTopics(
+@@ -562,7 +562,7 @@ void FoxgloveBridge::updateAdvertisedTopics(
        }
  
        const ChannelId channelId = channelResult.value().id();
@@ -43,7 +20,7 @@ index 2229aadc..9431dbdd 100644
                    topic.c_str());
        _channels.insert({channelId, std::move(channelResult.value())});
      }
-@@ -814,7 +814,7 @@ void FoxgloveBridge::subscribeConnectionGraph(bool subscribe) {
+@@ -827,7 +827,7 @@ void FoxgloveBridge::subscribeConnectionGraph(bool subscribe) {
  }
  
  void FoxgloveBridge::subscribe(ChannelId channelId, const foxglove::ClientMetadata& client) {
@@ -52,7 +29,7 @@ index 2229aadc..9431dbdd 100644
                channelId, client.id);
    createOrIncrementSubscription(channelId, client.id, false, client.sink_id);
  }
-@@ -867,7 +867,7 @@ void FoxgloveBridge::createOrIncrementSubscriptionLocked(ChannelId channelId, Cl
+@@ -880,7 +880,7 @@ void FoxgloveBridge::createOrIncrementSubscriptionLocked(ChannelId channelId, Cl
                                                           std::optional<SinkId> sinkId) {
    auto channelIt = _channels.find(channelId);
    if (channelIt == _channels.end()) {
@@ -61,7 +38,7 @@ index 2229aadc..9431dbdd 100644
                   channelId);
      return;
    }
-@@ -898,7 +898,7 @@ void FoxgloveBridge::createOrIncrementSubscriptionLocked(ChannelId channelId, Cl
+@@ -911,7 +911,7 @@ void FoxgloveBridge::createOrIncrementSubscriptionLocked(ChannelId channelId, Cl
      auto [it, inserted] = _subscriptions.emplace(channelId, std::move(channelSub));
      subIt = it;
  
@@ -70,7 +47,7 @@ index 2229aadc..9431dbdd 100644
                  topic.c_str(), datatype.c_str(), channelId);
    }
  
-@@ -922,7 +922,7 @@ void FoxgloveBridge::createOrIncrementSubscriptionLocked(ChannelId channelId, Cl
+@@ -935,7 +935,7 @@ void FoxgloveBridge::createOrIncrementSubscriptionLocked(ChannelId channelId, Cl
  }
  
  void FoxgloveBridge::unsubscribe(ChannelId channelId, const foxglove::ClientMetadata& client) {
@@ -79,7 +56,7 @@ index 2229aadc..9431dbdd 100644
                channelId, client.id);
    removeOrDecrementSubscription(channelId, client.id, false);
  }
-@@ -938,7 +938,7 @@ void FoxgloveBridge::removeOrDecrementSubscriptionLocked(ChannelId channelId, Cl
+@@ -951,7 +951,7 @@ void FoxgloveBridge::removeOrDecrementSubscriptionLocked(ChannelId channelId, Cl
    auto subIt = _subscriptions.find(channelId);
    if (subIt == _subscriptions.end()) {
      RCLCPP_ERROR(this->get_logger(),
@@ -88,7 +65,7 @@ index 2229aadc..9431dbdd 100644
                   clientId, channelId);
      return;
    }
-@@ -953,7 +953,7 @@ void FoxgloveBridge::removeOrDecrementSubscriptionLocked(ChannelId channelId, Cl
+@@ -966,7 +966,7 @@ void FoxgloveBridge::removeOrDecrementSubscriptionLocked(ChannelId channelId, Cl
    // If no more subscribers, destroy the ROS subscription
    if (subIt->second.wsClientIds.empty() && subIt->second.gatewayClientIds.empty()) {
      RCLCPP_INFO(this->get_logger(),
@@ -97,7 +74,7 @@ index 2229aadc..9431dbdd 100644
      _subscriptions.erase(subIt);
    }
  }
-@@ -1092,7 +1092,7 @@ void FoxgloveBridge::clientUnadvertise(ClientId clientId, ChannelId clientChanne
+@@ -1105,7 +1105,7 @@ void FoxgloveBridge::clientUnadvertise(ClientId clientId, ChannelId clientChanne
  
    const auto& publisher = it->second.publisher;
    RCLCPP_INFO(this->get_logger(),
@@ -106,7 +83,7 @@ index 2229aadc..9431dbdd 100644
                publisher->get_topic_name(), publisher->get_subscription_count(), clientChannelId);
  
    _clientAdvertisedTopics.erase(it);
-@@ -1460,13 +1460,13 @@ void FoxgloveBridge::gatewaySubscribe(uint32_t clientId,
+@@ -1585,13 +1585,13 @@ void FoxgloveBridge::gatewaySubscribe(uint32_t clientId,
    auto sinkId = _gateway->sinkId();
    if (!sinkId.has_value()) {
      RCLCPP_WARN(this->get_logger(),
@@ -122,7 +99,7 @@ index 2229aadc..9431dbdd 100644
                channel.id(), std::string(channel.topic()).c_str(), clientId);
    createOrIncrementSubscription(channel.id(), clientId, true, sinkId);
  }
-@@ -1474,7 +1474,7 @@ void FoxgloveBridge::gatewaySubscribe(uint32_t clientId,
+@@ -1599,7 +1599,7 @@ void FoxgloveBridge::gatewaySubscribe(uint32_t clientId,
  void FoxgloveBridge::gatewayUnsubscribe(uint32_t clientId,
                                          const foxglove::ChannelDescriptor& channel) {
    RCLCPP_INFO(this->get_logger(),
@@ -131,7 +108,7 @@ index 2229aadc..9431dbdd 100644
                channel.id(), std::string(channel.topic()).c_str(), clientId);
    removeOrDecrementSubscription(channel.id(), clientId, true);
  }
-@@ -1489,7 +1489,7 @@ void FoxgloveBridge::gatewayClientAdvertise(uint32_t clientId,
+@@ -1614,7 +1614,7 @@ void FoxgloveBridge::gatewayClientAdvertise(uint32_t clientId,
  
    ChannelAndClientId key = {channelId, clientId};
    if (_gatewayClientAdvertisedTopics.find(key) != _gatewayClientAdvertisedTopics.end()) {
@@ -140,7 +117,7 @@ index 2229aadc..9431dbdd 100644
                  clientId, channelId, topicName.c_str());
      return;
    }
-@@ -1506,7 +1506,7 @@ void FoxgloveBridge::gatewayClientAdvertise(uint32_t clientId,
+@@ -1631,7 +1631,7 @@ void FoxgloveBridge::gatewayClientAdvertise(uint32_t clientId,
  
    if (topicType.empty()) {
      RCLCPP_ERROR(this->get_logger(),
@@ -149,7 +126,7 @@ index 2229aadc..9431dbdd 100644
                   clientId, channelId, topicName.c_str());
      return;
    }
-@@ -1514,12 +1514,12 @@ void FoxgloveBridge::gatewayClientAdvertise(uint32_t clientId,
+@@ -1639,12 +1639,12 @@ void FoxgloveBridge::gatewayClientAdvertise(uint32_t clientId,
    try {
      auto ad = createClientPublisher(topicName, topicType, encoding, schemaData, schemaLen);
      RCLCPP_INFO(this->get_logger(),
@@ -164,7 +141,7 @@ index 2229aadc..9431dbdd 100644
                   clientId, channelId, topicName.c_str(), ex.what());
    }
  }
-@@ -1533,13 +1533,13 @@ void FoxgloveBridge::gatewayClientUnadvertise(uint32_t clientId,
+@@ -1658,13 +1658,13 @@ void FoxgloveBridge::gatewayClientUnadvertise(uint32_t clientId,
  
    auto it = _gatewayClientAdvertisedTopics.find(key);
    if (it == _gatewayClientAdvertisedTopics.end()) {
@@ -180,7 +157,7 @@ index 2229aadc..9431dbdd 100644
                channelId, it->second.topicName.c_str());
    _gatewayClientAdvertisedTopics.erase(it);
  
-@@ -1563,7 +1563,7 @@ void FoxgloveBridge::gatewayClientMessage(uint32_t clientId,
+@@ -1688,7 +1688,7 @@ void FoxgloveBridge::gatewayClientMessage(uint32_t clientId,
      auto it = _gatewayClientAdvertisedTopics.find(key);
      if (it == _gatewayClientAdvertisedTopics.end()) {
        RCLCPP_ERROR(this->get_logger(),
@@ -189,7 +166,7 @@ index 2229aadc..9431dbdd 100644
                     channelId);
        return;
      }
-@@ -1574,7 +1574,7 @@ void FoxgloveBridge::gatewayClientMessage(uint32_t clientId,
+@@ -1699,7 +1699,7 @@ void FoxgloveBridge::gatewayClientMessage(uint32_t clientId,
    try {
      publishClientData(ad, data, dataLen);
    } catch (const std::exception& ex) {

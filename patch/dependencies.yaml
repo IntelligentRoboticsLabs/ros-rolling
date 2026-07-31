@@ -74,7 +74,7 @@ tvm_vendor:
 libphidget22:
   add_host: ["libusb"]
 libg2o:
-  add_host: ["qt", "libglu", "freeglut"]
+  add_host: ["qt", "${{ 'libglu' if linux }}", "${{ 'freeglut' if not osx }}"]
 fmilibrary_vendor:
   add_host: ["fmilib"]
 mrpt2:
@@ -150,7 +150,7 @@ moveit_setup_assistant:
 moveit:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 moveit_visual_tools:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "libboost-devel"]
 force_torque_sensor_broadcaster:
   add_host: ["typeguard", "jinja2"]
 ros_gz_sim:
@@ -301,3 +301,5 @@ depth_image_proc:
 rqt_mocap4r2_control:
   remove_host: ["qt-main"]
   remove_run: ["qt-main"]
+zstd_point_cloud_transport:
+  add_host: ["ros-rolling-zstd-cmake-module", "zstd"]
